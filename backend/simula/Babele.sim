@@ -1,0 +1,110 @@
+! Babele Simula 67 Compiler ;
+! Simula e' il primo linguaggio OOP della storia (1967) ;
+! Contiene le classi che hanno ispirato Smalltalk, C++, Java ;
+
+Begin
+
+  ! Definizione della classe Ty ;
+  Class Ty;
+  Begin
+    Text kind;
+    Procedure Init(k); Text k;
+      kind :- k;
+  End;
+
+  ! Classe Expr per l'AST ;
+  Class Expr;
+  Begin
+    Text nodeType;
+    Ref(Expr) left, right;
+
+    Procedure Init(t); Text t;
+      nodeType :- t;
+  End;
+
+  ! Classe Value con ereditarieta' ;
+  Expr Class Value;
+  Begin
+    Text data;
+
+    Procedure Init(t, d); Text t, d;
+    Begin
+      Expr.Init(t);
+      data :- d;
+    End;
+  End;
+
+  ! Classe Statement ;
+  Expr Class Statement;
+  Begin
+    Procedure Init(t); Text t;
+      Expr.Init(t);
+  End;
+
+  ! Classe Parser ;
+  Class Parser;
+  Begin
+    Text source;
+    Integer position;
+
+    Procedure Init(s); Text s;
+    Begin
+      source :- s;
+      position :- 1;
+    End;
+
+    Text Procedure NextChar;
+    Begin
+      If position <= Length(source) Then
+      Begin
+        position := position + 1;
+        NextChar :- source(position - 1)
+      End
+      Else
+        NextChar :- ' '
+    End;
+
+    Procedure ParseProgram;
+    Begin
+      OutText("Parsing del programma Babele..."); OutImage;
+      While position <= Length(source) Do
+        NextChar
+    End;
+  End;
+
+  ! Classe Codegen per generare C ;
+  Class Codegen;
+  Begin
+    Text output;
+
+    Procedure Init;
+      output :- "";
+
+    Procedure Emit(s); Text s;
+      output :- output & s & "\n";
+
+    Procedure Generate;
+    Begin
+      Emit("/* Generato da Babele in Simula */");
+      Emit("#include <stdio.h>");
+      Emit("int main(void) {");
+      Emit("    printf(\"Ciao, mondo!\n\");");
+      Emit("    return 0;");
+      Emit("}");
+      OutText(output); OutImage
+    End;
+  End;
+
+  ! Blocco principale ;
+  Ref(Codegen) cg;
+  Ref(Parser) p;
+
+  cg :- New Codegen;
+  cg.Init;
+  cg.Generate;
+
+  p :- New Parser;
+  p.Init("fn main() { print(\"Ciao\"); }");
+  p.ParseProgram;
+
+End

@@ -1,0 +1,70 @@
+# Babele Algol 68 Compiler #
+# Algol 68 e' uno dei linguaggi piu' influenti della storia #
+
+BEGIN
+
+  # Definizione dei tipi #
+  MODE TY = UNION(INT, REAL, STRING, BOOL);
+  MODE VALUE = UNION(INT, REAL, STRING, BOOL);
+
+  # Mode per l'AST #
+  MODE EXPR = UNION(
+    INT,               # Literal int #
+    STRING,            # Literal string #
+    STRUCT(STRING name) # Variable reference #
+  );
+
+  # Mode per uno statement #
+  MODE STMT = STRUCT(
+    STRING kind,
+    REF EXPR expr
+  );
+
+  # Procedura di stampa #
+  PROC print value = (VALUE v) VOID:
+    CASE v IN
+      (INT i): print((i, newline)),
+      (REAL r): print((r, newline)),
+      (STRING s): print((s, newline)),
+      (BOOL b): print((b, newline))
+    ESAC;
+
+  # Procedura di somma #
+  PROC add = (INT a, INT b) INT: a + b;
+
+  # Procedura di concatenazione stringhe #
+  PROC concat = (STRING a, STRING b) STRING: a + b;
+
+  # Funzione ricorsiva: fattoriale #
+  PROC factorial = (INT n) INT:
+    IF n <= 1 THEN 1
+    ELSE n * factorial(n - 1)
+    FI;
+
+  # Funzione Fibonacci #
+  PROC fib = (INT n) INT:
+    IF n < 2 THEN n
+    ELSE fib(n - 1) + fib(n - 2)
+    FI;
+
+  # Generatore del codice C #
+  PROC generate_c = (STRING name) VOID:
+  BEGIN
+    print(("#include <stdio.h>", newline));
+    print(("int main(void) {", newline));
+    print(("    printf(\"Ciao, " + name + "!\n\");", newline));
+    print(("    return 0;", newline));
+    print(("}", newline))
+  END;
+
+  # Main #
+  INT x := 5;
+  INT fatt := factorial(x);
+  INT f10 := fib(10);
+
+  print(("Fattoriale di 5: ", fatt, newline));
+  print(("Fibonacci di 10: ", f10, newline));
+
+  generate_c("mondo")
+
+END
