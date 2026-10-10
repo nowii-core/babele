@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "rust-lang.rust-analyzer",
+    "ocaml.ocaml-platform",
+    "haskell.haskell",
+    "ms-vscode.cpptools"
+  ]
+}

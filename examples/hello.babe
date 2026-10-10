@@ -1,0 +1,5 @@
+// Esempio di codice Babele
+fn main() {
+    let saluto = "Ciao, mondo!";
+    print(saluto);
+}
