@@ -5,6 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/nowii-core/babele)](https://github.com/nowii-core/babele/releases)
 [![Languages](https://img.shields.io/badge/languages-30%2B-blueviolet)](LANGUAGES.md)
+[![Backends](https://img.shields.io/badge/working_backends-6-success)]()
 [![Status](https://img.shields.io/badge/status-alpha-orange)]()
 
 ![Babele demo](docs/images/demo.png)
@@ -15,39 +16,63 @@ Millions of lines of COBOL, Fortran and Ada run in production in banks, airlines
 
 Babele solves this. You write modern code once, and Babele generates legacy code automatically - idiomatic, readable, and maintainable.
 
-## Quick Start
+## One Input, Six Languages
 
-git clone https://github.com/nowii-core/babele.git
-cd babele
-cargo build --release
-
-Compile an example to C:
-
-cargo run -- examples/hello.babe --target=c
-
-Compile the same file to COBOL:
-
-cargo run -- examples/hello.babe --target=cobol
-
-## Example
+The same .babe file compiles to C, Python, JavaScript, Rust, Swift and COBOL.
 
 Input - examples/hello.babe:
 
     fn main() {
         let saluto = "Ciao, mondo!";
         print(saluto);
+        let x = 40 + 2;
+        print(x);
+        let n = 10;
+        let somma = 0;
+        let i = 1;
+        while i < n {
+            somma = somma + i;
+            i = i + 1;
+        }
+        print(somma);
+        if somma > 50 {
+            print("Maggiore di 50");
+        } else {
+            print("Minore o uguale a 50");
+        }
     }
 
 Output C - hello.c:
 
-    /* Generato da Babele */
     #include <stdio.h>
+    #include <stdbool.h>
+
+    static inline void babele_print_int(int x) { printf("%d\n", x); }
+    static inline void babele_print_str(const char* x) { printf("%s\n", x); }
+
+    #define BABELE_PRINT(x) _Generic((x), \
+        int: babele_print_int, \
+        const char*: babele_print_str \
+    )(x)
 
     int main(void) {
-        const char* saluto = "Ciao, mondo!";
-        printf("%s\n", saluto);
+        __auto_type saluto = "Ciao, mondo!";
+        BABELE_PRINT(saluto);
+        __auto_type x = (40 + 2);
+        BABELE_PRINT(x);
         return 0;
     }
+
+Output Python - hello.py:
+
+    def main():
+        saluto = "Ciao, mondo!"
+        print(saluto)
+        x = (40 + 2)
+        print(x)
+
+    if __name__ == "__main__":
+        main()
 
 Output COBOL - hello.cob:
 
@@ -62,23 +87,52 @@ Output COBOL - hello.cob:
                DISPLAY SALUTO.
                STOP RUN.
 
-Same input. Two completely different worlds.
+Same input. Six completely different worlds.
 
-## Supported Languages
+## Quick Start
 
-Babele targets 30+ languages, spanning 72 years of computer science history - from 1949 to 2021.
+    git clone https://github.com/nowii-core/babele.git
+    cd babele
+    cargo build --release
 
-Systems: C, C++, Rust, Assembly, Zig, Nim, D
+Compile to any target:
 
-Legacy Enterprise: COBOL, Fortran, Ada, Forth
+    ./target/release/babele examples/hello.babe --target=c
+    ./target/release/babele examples/hello.babe --target=cobol
+    ./target/release/babele examples/hello.babe --target=python
+    ./target/release/babele examples/hello.babe --target=js
+    ./target/release/babele examples/hello.babe --target=rust
+    ./target/release/babele examples/hello.babe --target=swift
 
-Functional: Haskell, OCaml, Erlang, Elixir, Scala, F#, Standard ML
+## Language Features
 
-Formal Research: Lean 4, Coq (Rocq), Agda, Idris
+- Variables (let) and assignment
+- Arithmetic: +, -, *, /
+- Comparison: <, >, ==, !=
+- Booleans: true, false
+- Strings and integers
+- print(...)
+- if / else
+- while
 
-Historical Influential: Simula 67, Smalltalk, Algol 68, APL, J, Common Lisp, Prolog
+## Working Backends
 
-Configuration: Nix
+- C (.c)
+- COBOL (.cob)
+- Python (.py)
+- JavaScript (.js)
+- Rust (.rs)
+- Swift (.swift)
+
+## Planned Backends
+
+30+ languages in the full roadmap, spanning 72 years of computer science history - from 1949 to 2021.
+
+- Systems: C, C++, Rust, Assembly, Zig, Nim, D
+- Legacy Enterprise: COBOL, Fortran, Ada, Forth
+- Functional: Haskell, OCaml, Erlang, Elixir, Scala, F#, Standard ML
+- Formal Research: Lean 4, Coq (Rocq), Agda, Idris
+- Historical: Simula 67, Smalltalk, Algol 68, APL, J, Common Lisp, Prolog
 
 See LANGUAGES.md for the complete list.
 
@@ -87,27 +141,21 @@ See LANGUAGES.md for the complete list.
     source.babe
          |
          v
-    Lexer / Parser       (OCaml)    -> AST
+    Lexer / Parser       (Rust)    -> AST
          |
          v
-    Type Checker         (Haskell)  -> Typed AST
-         |
-         v
-    IR Intermediate      (Rust)
-         |
-         v
-    Optimizer            (Rust + Prolog)
-         |
-         v
-    Code Generators      (C, C++, Rust, ASM, COBOL, Fortran, Ada, Forth, ...)
+    Code Generators      -> C, COBOL, Python, JS, Rust, Swift, ...
+    (per-target)
 
-See ARCHITECTURE.md for details.
+See ARCHITECTURE.md for the full architecture including the future pipeline with OCaml, Haskell, Prolog and Erlang.
 
 ## Roadmap
 
 - [x] Working compiler - C and COBOL backends
 - [x] Project structure and documentation
 - [x] First public release (v0.1.0)
+- [x] Arithmetic, variables, if/else, while
+- [x] Multi-target codegen (6 backends)
 - [ ] Full OCaml parser
 - [ ] Haskell type inference
 - [ ] Prolog optimizer integration
@@ -119,15 +167,9 @@ See ROADMAP.md for the full plan.
 
 ## Why So Many Languages
 
-Because no one has ever done it. Every other compiler supports 2-3 backends. Babele supports 30+.
+Because no one has ever done it. Every other compiler supports 2-3 backends. Babele targets 30+.
 
-Each backend is developed independently and attracts a different community:
-
-- COBOL attracts enterprise developers maintaining banking systems.
-- Fortran attracts scientists and HPC engineers.
-- Ada attracts avionics and defense engineers.
-- Haskell and OCaml attract compiler researchers.
-- Coq, Agda and Lean 4 attract formal verification researchers.
+Each backend attracts a different community: COBOL for banking, Fortran for science, Ada for avionics, Haskell and OCaml for compiler research, Coq and Agda for formal verification.
 
 Babele is not just a compiler - it is a bridge between worlds that never spoke to each other.
 

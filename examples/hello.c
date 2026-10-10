@@ -3,16 +3,21 @@
 #include <stdbool.h>
 #include <string.h>
 
+static inline void babele_print_int(int x) { printf("%d\n", x); }
+static inline void babele_print_long(long x) { printf("%ld\n", x); }
+static inline void babele_print_llong(long long x) { printf("%lld\n", x); }
+static inline void babele_print_double(double x) { printf("%g\n", x); }
+static inline void babele_print_str(const char* x) { printf("%s\n", x); }
+
 #define BABELE_PRINT(x) _Generic((x), \
-    int: printf("%d\n", (int)(x)), \
-    long: printf("%ld\n", (long)(x)), \
-    long long: printf("%lld\n", (long long)(x)), \
-    double: printf("%f\n", (double)(x)), \
-    float: printf("%f\n", (double)(x)), \
-    char*: printf("%s\n", (char*)(x)), \
-    const char*: printf("%s\n", (const char*)(x)), \
-    default: printf("(unknown)\n") \
-)
+    int: babele_print_int, \
+    long: babele_print_long, \
+    long long: babele_print_llong, \
+    double: babele_print_double, \
+    float: babele_print_double, \
+    char*: babele_print_str, \
+    const char*: babele_print_str \
+)(x)
 
 int main(void) {
     __auto_type saluto = "Ciao, mondo!";
