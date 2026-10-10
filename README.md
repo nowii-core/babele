@@ -1,28 +1,73 @@
 # Babele
 
-> Un compilatore source-to-source universale. Scrivi una volta, compila in 14 linguaggi diversi.
+> A universal source-to-source compiler. Write once, compile to 30+ languages.
 
-## Cos'è Babele
+## The Problem
 
-Babele prende in input un linguaggio moderno (`.babe`) e lo traduce in codice sorgente leggibile in 14 linguaggi: da C a COBOL, da Rust a Forth, da Assembly a Haskell.
+Millions of lines of COBOL, Fortran and Ada run in production in banks, airlines and governments. The developers who wrote them are retiring. Rewriting them by hand costs millions.
 
-## Architettura
+Babele solves this. Write modern code once, generate legacy code automatically.
 
-| Frontend | Middle-end | Backend |
-|----------|------------|---------|
-| OCaml    | Rust       | C       |
-| Haskell  | Prolog     | C++     |
-| Lisp     | Erlang     | Rust    |
-|          | Scala      | Assembly|
-|          |            | Fortran |
-|          |            | Ada     |
-|          |            | COBOL   |
-|          |            | Forth   |
+## Example
 
-## Stato
+Input (hello.babe):
+    fn main() {
+        let saluto = "Ciao, mondo!";
+        print(saluto);
+    }
 
-In sviluppo — Fase 1: Fondamenta.
+Output C:
+    /* Generato da Babele */
+    #include <stdio.h>
+    int main(void) {
+        const char* saluto = "Ciao, mondo!";
+        printf("%s\n", saluto);
+        return 0;
+    }
 
-## Licenza
+Output COBOL:
+          * Generato da Babele
+           IDENTIFICATION DIVISION.
+           PROGRAM-ID. HELLO.
+           DATA DIVISION.
+           WORKING-STORAGE SECTION.
+           01 SALUTO PIC X(12).
+           PROCEDURE DIVISION.
+               MOVE "Ciao, mondo!" TO SALUTO.
+               DISPLAY SALUTO.
+               STOP RUN.
+
+Same input. Two completely different worlds.
+
+## Supported Languages
+
+30+ languages, from 1949 to 2021. See LANGUAGES.md for the full list.
+
+Systems: C, C++, Rust, Assembly, Zig, Nim, D
+Legacy: COBOL, Fortran, Ada, Forth
+Functional: Haskell, OCaml, Erlang, Elixir, Scala, F#, SML
+Research: Lean 4, Coq, Agda, Idris
+Historical: Simula 67, Smalltalk, Algol 68, APL, J, Lisp, Prolog
+
+## Architecture
+
+source.babe
+  -> Lexer/Parser (OCaml)    -> AST
+  -> Type Checker (Haskell)  -> Typed AST
+  -> IR (Rust)               -> Middle-end
+  -> Optimizer (Prolog)      -> Optimized IR
+  -> Codegen (14 backends)   -> C, COBOL, Rust, ASM
+
+## Roadmap
+
+- [x] Working compiler with C and COBOL backends
+- [x] Documentation
+- [ ] Full OCaml parser
+- [ ] Haskell type inference
+- [ ] Prolog optimizer
+- [ ] Assembly backends
+- [ ] First stable release
+
+## License
 
 MIT
