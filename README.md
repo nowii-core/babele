@@ -149,22 +149,6 @@ See LANGUAGES.md for the complete list.
 
 See ARCHITECTURE.md for the full architecture including the future pipeline with OCaml, Haskell, Prolog and Erlang.
 
-## Roadmap
-
-- [x] Working compiler - C and COBOL backends
-- [x] Project structure and documentation
-- [x] First public release (v0.1.0)
-- [x] Arithmetic, variables, if/else, while
-- [x] Multi-target codegen (6 backends)
-- [ ] Full OCaml parser
-- [ ] Haskell type inference
-- [ ] Prolog optimizer integration
-- [ ] Assembly backends (x86-64, ARM64, RISC-V)
-- [ ] Distributed compilation with Erlang
-- [ ] Stable release (v1.0.0)
-
-See ROADMAP.md for the full plan.
-
 ## Why So Many Languages
 
 Because no one has ever done it. Every other compiler supports 2-3 backends. Babele targets 30+.
